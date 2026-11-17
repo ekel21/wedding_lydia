@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owns(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function boundedText(value, minimum, maximum) {
+      return value is string && value.size() >= minimum && value.size() <= maximum
+        && value.matches('[\\s\\S]*[^\\s][\\s\\S]*');
+    }
+
+    match /rsvp/{uid} {
+      allow get: if owns(uid);
+      allow create, update: if owns(uid) && validAttendance(request.resource.data);
+
+      function validAttendance(data) {
+        return data.keys().hasAll(['name', 'status', 'guestCount', 'updatedAt'])
+          && data.keys().hasOnly(['name', 'status', 'guestCount', 'message', 'updatedAt'])
+          && data.get('message', '') is string && data.get('message', '').size() <= 500
+          && boundedText(data.name, 2, 80)
+          && data.guestCount is int && data.updatedAt == request.time
+          && (
+            (data.status == 'hadir' && data.guestCount >= 1 && data.guestCount <= 5)
+            || (data.status == 'tidak-hadir' && data.guestCount == 0)
+          );
+      }
+    }
+  }
+}
