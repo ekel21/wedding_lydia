@@ -158,9 +158,6 @@ section[id]:not(.cover),#awal{scroll-margin-top:15px}
 .timeline li:before{position:absolute; content:""; width:8px; height:8px; left:11px; top:20px; background:#a45b43; transform:rotate(45deg)}
 .timeline h3{font-size:clamp(1.21rem,2.4vw,1.52rem); letter-spacing:-.027em; color:var(--brick); line-height:1.2; margin:6px 0 8px}
 .timeline p:last-child{color:var(--muted); font-size:.86rem}
-.gallery-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
-.gallery-grid a{display:block; overflow:hidden}
-.gallery-grid img{width:100%; aspect-ratio:4/5; object-fit:cover; background:#f1ddc5}
 .bank-card{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:15px 20px; border:1px solid #d8b89e; padding:19px; background:#fff8ed}
 .bank-brand{color:#783321; font-size:.79rem; letter-spacing:.135em}
 .bank-number{font:480 clamp(1.15rem,3.6vw,1.6rem)/1.4 var(--display); letter-spacing:.03em; word-break:break-all}
@@ -312,7 +309,6 @@ section[id]:not(.cover),#awal{scroll-margin-top:68px}
 .timeline li:not(:last-child):after{position:absolute; content:""; width:2px; background:linear-gradient(#a95d43,#d29560); left:-18px; top:26px; bottom:calc(-24px - var(--story-gap)); transform-origin:center top; z-index:0}
 .timeline h3{font-size:1.36rem}
 .timeline p:last-child{font-size:.95rem; line-height:1.74; text-wrap:pretty}
-.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .form-card{max-width:none; padding:19px 17px 21px}
 
 /* Reveal layers are decorative. They never block the form or links. */
@@ -381,17 +377,17 @@ section[id]:not(.cover),#awal{scroll-margin-top:68px}
 /* Family notation and the optional photo gallery. */
 .memorial-mark{color:#824b31; font-size:.95em; text-decoration:none; white-space:nowrap}
 .gallery{background:#fbf2e5}
-.gallery-grid{gap:11px; align-items:start}
+.gallery-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; align-items:start}
+/* The narrower portrait and wider landscape then sit at the same visual height. */
+.gallery-grid[data-layout="featured-pair"]{grid-template-columns:minmax(0,calc(38.1% - 1px)) minmax(0,1fr)}
 .gallery-tile{min-width:0; border:1px solid #d5af8d; padding:5px; background:#fffaf0; box-shadow:0 3px 10px #4b2b1713}
 .gallery-tile:first-child:nth-last-child(odd){grid-column:1/-1}
 .gallery-open{display:block; position:relative; width:100%; padding:0; border:0; background:#e5d2b8; color:#fff8ee; overflow:hidden}
 .gallery-open:before{content:""; position:absolute; inset:0; background:var(--pattern) center / 56px 66px; opacity:.2}
 .gallery-media{display:block; width:100%; position:relative; overflow:hidden; background:#d5c0a5}
-.gallery-open .gallery-media{aspect-ratio:4/5}
-.gallery-tile:first-child:nth-last-child(odd) .gallery-media{aspect-ratio:16/9}
-.gallery-grid .gallery-media img{display:block; width:100%; height:100%; aspect-ratio:auto; object-fit:cover; object-position:center; background:transparent; transition:transform .3s var(--ease)}
+.gallery-grid .gallery-media img{display:block; width:100%; height:auto; object-fit:contain; background:transparent}
 .gallery-enlarge{position:absolute; right:6px; bottom:6px; display:grid; width:33px; height:33px; place-items:center; border:1px solid #f2d2a2; border-radius:50%; background:#542719; color:#fff5e7; font-size:1.12rem}
-@media (hover:hover){.gallery-open:hover img{transform:scale(1.025)}}
+@media (hover:hover){.gallery-open:hover .gallery-enlarge{background:var(--brick)}}
 .gallery-viewer{border:1px solid #cca583; padding:10px; width:min(438px,calc(100% - 24px)); max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); background:#fff6e8; color:var(--ink); overflow:auto; overscroll-behavior:contain}
 .gallery-viewer:not([open]){display:none}
 .gallery-viewer::backdrop,.gallery-backdrop{background:#251712df}
@@ -407,4 +403,3 @@ section[id]:not(.cover),#awal{scroll-margin-top:68px}
 .gallery-viewer-controls button{min-width:48px}
 .gallery-viewer-controls button:disabled{opacity:.4}
 html.gallery-overlay-open{overflow:hidden}
-@media(prefers-reduced-motion:reduce){.gallery-open:hover img{transform:none}}
