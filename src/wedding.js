@@ -28,9 +28,9 @@ export const wedding = {
     bride: '',
     galleryFolder: 'https://drive.google.com/drive/folders/1KtfxgSVmTMZNDvwv32-k5pZ3F8ubsOEm',
     gallery: [
-      { driveId: '1qD8GrJmO1l0L7prBO4hPaWiUebtl2_fo', src: '/images/gallery/dua-potret-edit.webp', alt: 'Dua potret Moses dan Lidya berdampingan di depan gapura' },
-      { driveId: '1MZy0T3x_d7DCWU6n21nDcjD27vjqEU7z', src: '/images/gallery/perbukitan-edit.webp', alt: 'Moses dan Lidya berfoto di atas panggung kayu dengan latar perbukitan' },
-      { driveId: '15JUmJBXREj3iApOqrXAxgiJjAZGMsUtv', src: '/images/gallery/momen-powerboat-edit.webp', alt: 'Moses dan Lidya berfoto di depan latar F1 Powerboat Lake Toba' },
+      { driveId: '1ASGtqEabbTDWZZCuuo9rS-fotKOBTeb1', src: '/images/gallery/drive-1ASGtqEabbTDWZZCuuo9rS-fotKOBTeb1.webp', alt: 'Foto Moses dan Lidya di Danau Toba' },
+      { driveId: '1YsNZtRy5SvKa4B_qMY-mdB9wgZRWJxav', src: '/images/gallery/drive-1YsNZtRy5SvKa4B_qMY-mdB9wgZRWJxav.webp', alt: 'Potret Moses dan Lidya berlatar perbukitan' },
+      { driveId: '1oiXZjM80iSGHvgAG9swuPxae-Bl-cFbV', src: '/images/gallery/drive-1oiXZjM80iSGHvgAG9swuPxae-Bl-cFbV.webp', alt: 'Dua potret Moses dan Lidya dalam satu bingkai' },
     ],
     music: 'https://www.dropbox.com/scl/fi/u4feigden62r3a6voejla/JUMPA-RAS-ATE-NGENA-Iche-Br-Ginting-Cipt-Dr.-Minola-Sebayang-SH-MH.mp3?rlkey=hcnj9n25weoblkftncc97f735&raw=1',
     musicMimeType: 'audio/mp4', // File Dropbox berisi AAC dalam wadah MP4 meskipun namanya .mp3.
@@ -38,9 +38,11 @@ export const wedding = {
   },
 };
 
-export function driveGalleryImage(id) {
+export const galleryPhotoLimit = 6;
+
+export function driveGalleryImage(id, thumbnail = false) {
   if (typeof id !== 'string' || !/^[\w-]{10,128}$/.test(id)) return '';
-  return 'https://lh3.googleusercontent.com/d/' + id + '=w1600';
+  return 'https://lh3.googleusercontent.com/d/' + id + (thumbnail ? '=w720' : '=w1600');
 }
 
 const dateFormat = new Intl.DateTimeFormat('id-ID', {

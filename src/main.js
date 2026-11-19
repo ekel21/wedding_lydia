@@ -2,7 +2,7 @@ import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/fraunces/wght.css';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import './style.css';
-import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink, driveGalleryImage } from './wedding.js';
+import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink, driveGalleryImage, galleryPhotoLimit } from './wedding.js';
 
 const byId = (id) => document.getElementById(id);
 const show = (id, yes = true) => { byId(id).hidden = !yes; };
@@ -22,10 +22,10 @@ reducedMotion.addEventListener?.('change', (event) => {
   root.classList.toggle('motion-enabled', !event.matches);
 });
 
-function activateScrollMotion(isOpening) {
+function activateScrollMotion(isOpening, scope = document) {
   if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
   const startAt = isOpening ? 110 : innerHeight - 30;
-  const pending = [...document.querySelectorAll('[data-reveal]')]
+  const pending = [...scope.querySelectorAll('[data-reveal]')]
     .filter((element) => !element.closest('[hidden]') && element.getBoundingClientRect().top > startAt);
 
   function appear(element) {
@@ -230,20 +230,41 @@ for (const key of ['groom', 'bride']) {
   image.src = media[key];
   portrait.append(image);
 }
-const gallery = (Array.isArray(media.gallery) ? media.gallery : [])
+const gallerySnapshot = (Array.isArray(media.gallery) ? media.gallery : [])
   .map((entry) => typeof entry === 'string' ? { src: entry } : entry)
-  .filter((entry) => typeof entry?.src === 'string' && entry.src.trim())
-  .slice(0, 6)
-  .map((entry, index) => ({ ...entry, driveSrc: driveGalleryImage(entry.driveId), alt: entry.alt || 'Foto Moses dan Lidya ' + (index + 1) }));
+  .filter((entry) => typeof entry?.src === 'string' && entry.src.trim());
 
-function setGalleryImage(image, photo) {
+async function loadGallery() {
+  const describe = (entry, index) => ({ ...entry, alt: entry.alt || 'Foto Moses dan Lidya ' + (index + 1) });
+  const snapshot = gallerySnapshot.slice(0, galleryPhotoLimit).map(describe);
+  if (!media.galleryFolder || location.protocol === 'file:') return snapshot;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 11500);
+  try {
+    const response = await fetch('/api/wedding-gallery', { signal: controller.signal });
+    if (!response.ok) return snapshot;
+    const { ids } = await response.json();
+    if (!Array.isArray(ids)) return snapshot;
+    const known = new Map(snapshot.map((photo) => [photo.driveId, photo]));
+    return [...new Set(ids.filter((id) => driveGalleryImage(id)))].slice(0, galleryPhotoLimit)
+      .map((driveId) => known.get(driveId) || { driveId }).map(describe);
+  } catch {
+    return snapshot;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function setGalleryImage(image, photo, thumbnail = false) {
+  const remote = driveGalleryImage(photo.driveId, thumbnail);
+  const fallback = photo.src || (!thumbnail && driveGalleryImage(photo.driveId, true));
   image.referrerPolicy = 'no-referrer';
-  image.onerror = photo.driveSrc ? () => {
-    if (image.src !== photo.driveSrc) return;
+  image.onerror = remote && fallback ? () => {
+    if (image.getAttribute('src') !== remote) return;
     image.onerror = null;
-    image.src = photo.src;
+    image.src = fallback;
   } : null;
-  image.src = photo.driveSrc || photo.src;
+  image.src = remote || fallback;
 }
 
 function setupGallery(photos) {
@@ -332,7 +353,7 @@ function setupGallery(photos) {
     image.alt = '';
     image.loading = 'lazy';
     image.decoding = 'async';
-    setGalleryImage(image, photo);
+    setGalleryImage(image, photo, true);
     const detail = document.createElement('span');
     detail.className = 'gallery-enlarge';
     detail.textContent = '+';
@@ -376,7 +397,17 @@ function setupGallery(photos) {
   show('galeri');
 }
 
-setupGallery(gallery);
+if (media.galleryFolder || gallerySnapshot.length) {
+  show('galeri');
+  void loadGallery().then((photos) => {
+    if (!photos.length) {
+      show('galeri', false);
+      return;
+    }
+    setupGallery(photos);
+    if (root.classList.contains('invitation-active')) activateScrollMotion(false, byId('gallery-grid'));
+  });
+}
 const musicButton = byId('music-toggle');
 const songName = media.song?.title || 'Lagu Undangan';
 

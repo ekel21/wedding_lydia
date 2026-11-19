@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink, driveGalleryImage } from '../src/wedding.js';
+import galleryApi, { parsePublicDriveFolder } from '../api/wedding-gallery.js';
 
 test('15 Januari 2027 jatuh pada Jumat dan konfigurasi WIB dihitung tepat', () => {
   assert.equal(formatEventDate(wedding.ceremony.date), 'Jumat, 15 Januari 2027');
@@ -43,4 +44,34 @@ test('setiap foto memakai ID file Drive dan tersedia cadangan WebP lokal', () =>
   }
   assert.equal(driveGalleryImage(undefined), '');
   assert.equal(driveGalleryImage(wedding.media.galleryFolder), '');
+});
+
+const listing = (ids, type = 'image/png') => `<div class="flip-entries">${ids.map((id) => `
+  <div class="flip-entry"><a href="https://drive.google.com/file/d/${id}/view?usp=drive_web">
+  <img src="https://drive-thirdparty.googleusercontent.com/16/type/${type}" /></a></div>`).join('')}</div>`;
+
+test('daftar Drive hanya menampilkan foto dan mengikuti isi terbaru, bukan ID cadangan', async (t) => {
+  const newIds = ['new-photo-A123', 'new-photo-B123'];
+  const html = listing([...newIds, ...newIds]) + listing(['file-pdf-12345'], 'application/pdf');
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    assert.equal(url.hostname, 'drive.google.com');
+    assert.equal(url.pathname, '/embeddedfolderview');
+    assert.equal(url.searchParams.get('id'), new URL(wedding.media.galleryFolder).pathname.split('/').at(-1));
+    return new Response(html, { headers: { 'Content-Type': 'text/html' } });
+  });
+  const response = await galleryApi.fetch(new Request('https://example.test/api/wedding-gallery'));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ids: newIds });
+  assert.match(response.headers.get('cache-control'), /s-maxage=60/);
+});
+
+test('folder kosong, folder privat, dan batas jumlah gambar dibedakan', async (t) => {
+  const all = Array.from({ length: 10 }, (_, index) => 'new-photo-' + index);
+  assert.deepEqual(parsePublicDriveFolder(listing([])), []);
+  assert.deepEqual(parsePublicDriveFolder(listing(all)), all.slice(0, 6));
+  assert.equal(parsePublicDriveFolder('<html><body>Sign in</body></html>'), null);
+  t.mock.method(globalThis, 'fetch', async () => new Response('<html>Sign in</html>', { headers: { 'Content-Type': 'text/html' } }));
+  const response = await galleryApi.fetch(new Request('https://example.test/api/wedding-gallery'));
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
 });

@@ -30,7 +30,7 @@ Edit `src/wedding.js` sebelum membagikan tautan.
 | Peta | Masing-masing mengarah ke pencarian nama tempat. Ganti `ceremony.mapsUrl` dan `reception.mapsUrl` dengan pin resmi. Teks peta yang diberikan untuk resepsi menyebut gereja, jadi tidak dipakai untuk resepsi. |
 | Nama keluarga | “Bena Tuah Tarigan Sibero” memakai satu huruf n. Nama Bapak Muhtar Pinem diberi tanda (+). |
 | Amplop digital | Sudah memakai data BRI yang diberikan. Tetapkan `gift: null` jika ingin menyembunyikan. |
-| Foto | Galeri memuat tiga foto dari folder Google Drive yang diberikan. Tiga versi WebP hasil edit ikut sebagai cadangan. Galeri muat sampai 6 foto. |
+| Foto | Galeri membaca isi folder Google Drive yang diberikan. Salinan WebP dari tiga PNG terbaru ikut sebagai cadangan. Galeri muat sampai 6 foto. |
 
 Nama, narasi, dan metadata untuk kartu tautan ada di `index.html`. Jika tanggal pemberkatan berubah, ubah juga tanggal pada `og:description` dan teks cadangan di HTML. Tanggal resepsi tidak otomatis mengikuti tanggal pemberkatan.
 
@@ -38,9 +38,9 @@ Contoh tautan tamu: `https://domain-undangan.vercel.app/?to=Keluarga%20Pinem`. B
 
 ### Galeri foto
 
-Entri `media.gallery` pada `src/wedding.js` memakai `driveId` masing-masing foto dari tautan folder pada `media.galleryFolder`. Foto asli dimuat langsung dari Google saat galeri dibuka, tanpa meminta tamu masuk akun Google. Pastikan tiap file bisa dilihat oleh **Siapa saja yang memiliki tautan**. Jika Drive tidak bisa memuat gambarnya, undangan memakai versi WebP hasil edit yang ada di `public/images/gallery/`.
+Situs Vercel membaca `media.galleryFolder` pada `src/wedding.js` melalui `api/wedding-gallery.js` setiap kali undangan dibuka, dengan cache daftar singkat di Vercel. Tamu tidak perlu masuk akun Google. Pastikan folder dan foto bisa dilihat oleh **Siapa saja yang memiliki tautan**. Tambah atau hapus foto di folder yang sama, lalu buka ulang undangan. Bila perubahan belum terlihat, tunggu sekitar 1–2 menit dan coba lagi. Tidak perlu commit baru hanya untuk foto.
 
-Untuk mengganti foto, ambil ID file dari tautan `https://drive.google.com/file/d/ID_FILE/view`, ubah `driveId`, dan sesuaikan `src` dengan file cadangan barunya. Menambah atau menghapus file di folder Drive tidak otomatis mengubah daftar galeri. Galeri tidak menampilkan keterangan di bawah foto. Tamu dapat mengetuk foto untuk memperbesar, lalu menutupnya dengan tombol × atau mengetuk area gelap di luar foto.
+Galeri menampilkan sampai enam gambar yang punya format web, seperti PNG, JPG, dan WebP. Jika daftar folder tidak bisa dibaca atau undangan dibuka dari pratinjau HTML lokal, `media.gallery` menjadi daftar cadangan. Tiga cadangan WebP di `public/images/gallery/` diambil dari PNG terbaru di folder Drive, tanpa mengubah komposisinya. Untuk mengubah folder sumber, ubah `media.galleryFolder` dan perbarui daftar serta file cadangannya jika diperlukan. Galeri tidak menampilkan keterangan di bawah foto. Tamu dapat mengetuk foto untuk memperbesar, lalu menutupnya dengan tombol × atau mengetuk area gelap di luar foto.
 
 ### Ayat pembuka dan musik
 - Ayat pembuka memakai Matius 19:6, Terjemahan Baru (TB). Ubah teks di bagian `scripture` pada `index.html` jika diperlukan.
