@@ -287,12 +287,15 @@ function setupGallery(entries) {
   const backdrop = byId('gallery-backdrop');
   const shell = document.querySelector('.invitation-shell');
   const fullPhoto = byId('gallery-viewer-image');
+  const photoStage = byId('gallery-viewer-photo');
   const prev = byId('gallery-prev');
   const next = byId('gallery-next');
   let current = 0;
   let trigger;
   let usingFallback = false;
   let wasOpen = false;
+  let photoVersion = 0;
+  let swipeStart = null;
 
   function openViewer() {
     if (wasOpen) return;
@@ -316,6 +319,8 @@ function setupGallery(entries) {
   function resetViewer() {
     if (!wasOpen || viewer.hasAttribute('open')) return;
     wasOpen = false;
+    photoVersion += 1;
+    swipeStart = null;
     if (usingFallback) {
       backdrop.hidden = true;
       viewer.classList.remove('is-fallback');
@@ -346,8 +351,21 @@ function setupGallery(entries) {
   function selectPhoto(index) {
     current = (index + photos.length) % photos.length;
     const photo = photos[current];
+    const version = ++photoVersion;
     fullPhoto.alt = photo.alt;
-    setGalleryImage(fullPhoto, photo);
+    // Show the same small photo as the grid, then upgrade without moving the controls.
+    setGalleryImage(fullPhoto, photo, true);
+    const source = driveGalleryImage(photo.driveId);
+    if (source) {
+      const large = new Image();
+      large.referrerPolicy = 'no-referrer';
+      large.onload = () => {
+        if (version !== photoVersion) return;
+        fullPhoto.onerror = null;
+        fullPhoto.src = source;
+      };
+      large.src = source;
+    }
     write('gallery-count', (current + 1) + ' dari ' + photos.length + ' foto');
   }
 
@@ -390,6 +408,21 @@ function setupGallery(entries) {
   prev.disabled = next.disabled = photos.length < 2;
   prev.addEventListener('click', () => selectPhoto(current - 1));
   next.addEventListener('click', () => selectPhoto(current + 1));
+  photoStage.addEventListener('touchstart', (event) => {
+    const touch = event.touches.length === 1 ? event.touches[0] : null;
+    swipeStart = touch ? { x: touch.clientX, y: touch.clientY, id: touch.identifier } : null;
+  }, { passive: true });
+  photoStage.addEventListener('touchcancel', () => { swipeStart = null; }, { passive: true });
+  photoStage.addEventListener('touchend', (event) => {
+    const start = swipeStart;
+    swipeStart = null;
+    if (!start || photos.length < 2) return;
+    const touch = [...event.changedTouches].find((point) => point.identifier === start.id);
+    if (!touch) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.4) selectPhoto(current + (dx < 0 ? 1 : -1));
+  }, { passive: true });
   viewer.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       event.preventDefault();
@@ -496,6 +529,7 @@ async function setupAttendance() {
   } : firebaseEnv;
   if (Object.values(config).some((value) => !value)) {
     show('preview-note');
+    write('guest-wishes-status', 'Ucapan tamu tersedia di undangan yang sudah terhubung ke Firebase.');
     return;
   }
 
@@ -503,6 +537,10 @@ async function setupAttendance() {
     const { connectWedding } = await import('./firebase.js');
     const connection = connectWedding(config, emulator);
     const attendForm = byId('attendance-form');
+    connection.watchWishes(renderWishes, () => {
+      write('guest-wishes-status', 'Ucapan belum bisa dimuat. Coba buka ulang undangan.');
+      show('guest-wishes-status');
+    });
 
     bindForm(attendForm, 'attendance-feedback', (data) => {
       const name = readName(data);
@@ -519,7 +557,38 @@ async function setupAttendance() {
   } catch {
     write('preview-note', 'Formulir sementara tidak dapat terhubung. Silakan coba lagi nanti.');
     show('preview-note');
+    write('guest-wishes-status', 'Ucapan belum bisa dimuat. Coba buka ulang undangan.');
   }
+}
+
+function renderWishes(wishes) {
+  const list = byId('guest-wishes-list');
+  const fragment = document.createDocumentFragment();
+  const dates = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' });
+  for (const wish of wishes) {
+    const item = document.createElement('li');
+    item.className = 'guest-wish';
+    const head = document.createElement('div');
+    head.className = 'guest-wish-head';
+    const name = document.createElement('strong');
+    name.className = 'guest-wish-name';
+    name.textContent = wish.name;
+    head.append(name);
+    if (wish.updatedAt) {
+      const time = document.createElement('time');
+      time.dateTime = wish.updatedAt.toISOString();
+      time.textContent = dates.format(wish.updatedAt);
+      head.append(time);
+    }
+    const message = document.createElement('p');
+    message.textContent = wish.message;
+    item.append(head, message);
+    fragment.append(item);
+  }
+  list.replaceChildren(fragment);
+  show('guest-wishes-list', wishes.length > 0);
+  write('guest-wishes-status', 'Belum ada ucapan. Jadilah yang pertama mengirim doa.');
+  show('guest-wishes-status', wishes.length === 0);
 }
 
 function localError(message) {

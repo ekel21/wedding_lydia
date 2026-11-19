@@ -26,5 +26,21 @@ service cloud.firestore {
           );
       }
     }
+
+    match /publicWishes/{uid} {
+      allow get: if true;
+      allow list: if request.query.limit <= 30;
+      allow create, update: if owns(uid) && validWish(uid, request.resource.data);
+      allow delete: if owns(uid);
+
+      function validWish(uid, data) {
+        let attendance = getAfter(/databases/$(database)/documents/rsvp/$(uid)).data;
+        return data.keys().hasAll(['name', 'message', 'updatedAt'])
+          && data.keys().hasOnly(['name', 'message', 'updatedAt'])
+          && boundedText(data.name, 2, 80) && boundedText(data.message, 1, 500)
+          && data.updatedAt == request.time && attendance.updatedAt == request.time
+          && data.name == attendance.name && data.message == attendance.message;
+      }
+    }
   }
 }

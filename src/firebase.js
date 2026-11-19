@@ -1,8 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, signInAnonymously } from 'firebase/auth';
 import {
-  connectFirestoreEmulator, doc, getFirestore, serverTimestamp, setDoc,
-} from 'firebase/firestore/lite';
+  collection, connectFirestoreEmulator, doc, getFirestore, limit,
+  onSnapshot, orderBy, query, serverTimestamp, writeBatch,
+} from 'firebase/firestore';
 
 export function connectWedding(firebaseConfig, useEmulators) {
   const app = initializeApp(firebaseConfig);
@@ -25,10 +26,21 @@ export function connectWedding(firebaseConfig, useEmulators) {
   return {
     async saveAttendance(details) {
       const guest = await identifyGuest();
-      await setDoc(doc(db, 'rsvp', guest.uid), {
-        ...details,
-        updatedAt: serverTimestamp(),
-      });
+      const batch = writeBatch(db);
+      const updatedAt = serverTimestamp();
+      const message = details.message.trim();
+      batch.set(doc(db, 'rsvp', guest.uid), { ...details, message, updatedAt });
+      const publicWish = doc(db, 'publicWishes', guest.uid);
+      if (message) batch.set(publicWish, { name: details.name, message, updatedAt });
+      else batch.delete(publicWish);
+      await batch.commit();
+    },
+    watchWishes(onUpdate, onError) {
+      const recent = query(collection(db, 'publicWishes'), orderBy('updatedAt', 'desc'), limit(30));
+      return onSnapshot(recent, (snapshot) => onUpdate(snapshot.docs.map((entry) => {
+        const { name, message, updatedAt } = entry.data();
+        return { name, message, updatedAt: updatedAt?.toDate?.() ?? null };
+      })), onError);
     },
   };
 }

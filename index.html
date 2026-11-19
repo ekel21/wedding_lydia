@@ -250,10 +250,15 @@
           </div>
           <label for="attendance-message">Ucapan atau doa <span class="optional-tag">(opsional)</span></label>
           <textarea id="attendance-message" name="message" rows="4" maxlength="500" placeholder="Tuliskan pesan untuk Moses dan Lidya"></textarea>
-          <p class="form-note">Konfirmasi dan pesan Anda tidak ditampilkan kepada tamu lain.</p>
+          <p class="form-note">Jika diisi, nama dan ucapan Anda akan terlihat oleh tamu lain. Status dan jumlah kehadiran tetap privat.</p>
           <button class="button button-gold" type="submit" disabled><svg class="icon" aria-hidden="true"><use href="#ico-send"/></svg>Kirim Konfirmasi</button>
           <p class="form-feedback" id="attendance-feedback" role="status" tabindex="-1"></p>
         </form>
+        <div class="guest-wishes" aria-labelledby="guest-wishes-title">
+          <h3 id="guest-wishes-title">Ucapan &amp; Doa Tamu</h3>
+          <p class="guest-wishes-status" id="guest-wishes-status" role="status">Memuat ucapan…</p>
+          <ul class="guest-wishes-list" id="guest-wishes-list" aria-labelledby="guest-wishes-title" hidden></ul>
+        </div>
       </div>
     </section>
 
