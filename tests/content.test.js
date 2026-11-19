@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink } from '../src/wedding.js';
+import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink, driveGalleryImage } from '../src/wedding.js';
 
 test('15 Januari 2027 jatuh pada Jumat dan konfigurasi WIB dihitung tepat', () => {
   assert.equal(formatEventDate(wedding.ceremony.date), 'Jumat, 15 Januari 2027');
@@ -28,4 +28,19 @@ test('tautan peta terpisah dan bisa diganti pin resmi', () => {
   assert.match(new URL(mapLink(wedding.ceremony)).searchParams.get('query'), /Gereja/);
   assert.match(new URL(mapLink(wedding.reception)).searchParams.get('query'), /Jambur/);
   assert.equal(mapLink({ mapsUrl: 'https://maps.app.goo.gl/pin' }), 'https://maps.app.goo.gl/pin');
+});
+
+test('setiap foto memakai ID file Drive dan tersedia cadangan WebP lokal', () => {
+  assert.equal(new URL(wedding.media.galleryFolder).hostname, 'drive.google.com');
+  const photos = wedding.media.gallery;
+  assert.equal(photos.length, 3);
+  assert.equal(new Set(photos.map((photo) => photo.driveId)).size, photos.length);
+  for (const photo of photos) {
+    const url = new URL(driveGalleryImage(photo.driveId));
+    assert.equal(url.hostname, 'lh3.googleusercontent.com');
+    assert.equal(url.pathname, `/d/${photo.driveId}=w1600`);
+    assert.match(photo.src, /^\/images\/gallery\/[\w-]+\.webp$/);
+  }
+  assert.equal(driveGalleryImage(undefined), '');
+  assert.equal(driveGalleryImage(wedding.media.galleryFolder), '');
 });

@@ -2,7 +2,7 @@ import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/fraunces/wght.css';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import './style.css';
-import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink } from './wedding.js';
+import { wedding, eventTime, formatEventDate, formatEventHours, guestFromSearch, countdownParts, mapLink, driveGalleryImage } from './wedding.js';
 
 const byId = (id) => document.getElementById(id);
 const show = (id, yes = true) => { byId(id).hidden = !yes; };
@@ -159,6 +159,7 @@ const target = countdown?.start ? eventTime(countdown.date, countdown.start) : n
 if (target) {
   show('countdown');
   const eventName = wedding.countdown === 'ceremony' ? 'Pemberkatan' : 'Resepsi';
+  write('countdown-title', 'Menuju ' + eventName);
   write('countdown-date', formatEventDate(countdown.date).replace(/^[^,]+, /, ''));
   byId('count-grid').setAttribute('aria-label', 'Hitung mundur menuju ' + eventName.toLowerCase());
   write('countdown-message', 'Waktu ' + eventName.toLowerCase() + ' telah tiba.');
@@ -229,24 +230,155 @@ for (const key of ['groom', 'bride']) {
   image.src = media[key];
   portrait.append(image);
 }
-const gallery = Array.isArray(media.gallery) ? media.gallery.filter(Boolean).slice(0, 6) : [];
-if (gallery.length) {
-  show('galeri');
-  gallery.forEach((source, index) => {
-    const link = document.createElement('a');
-    link.href = source;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    const image = new Image();
-    image.alt = 'Foto Moses dan Lidya ' + (index + 1);
-    image.loading = 'lazy';
-    image.src = source;
-    link.append(image);
-    byId('gallery-grid').append(link);
-  });
+const gallery = (Array.isArray(media.gallery) ? media.gallery : [])
+  .map((entry) => typeof entry === 'string' ? { src: entry } : entry)
+  .filter((entry) => typeof entry?.src === 'string' && entry.src.trim())
+  .slice(0, 6)
+  .map((entry, index) => ({ ...entry, driveSrc: driveGalleryImage(entry.driveId), alt: entry.alt || 'Foto Moses dan Lidya ' + (index + 1) }));
+
+function setGalleryImage(image, photo) {
+  image.referrerPolicy = 'no-referrer';
+  image.onerror = photo.driveSrc ? () => {
+    if (image.src !== photo.driveSrc) return;
+    image.onerror = null;
+    image.src = photo.src;
+  } : null;
+  image.src = photo.driveSrc || photo.src;
 }
+
+function setupGallery(photos) {
+  if (!photos.length) return;
+  const viewer = byId('gallery-viewer');
+  const closeButton = byId('gallery-close');
+  const backdrop = byId('gallery-backdrop');
+  const shell = document.querySelector('.invitation-shell');
+  const fullPhoto = byId('gallery-viewer-image');
+  const prev = byId('gallery-prev');
+  const next = byId('gallery-next');
+  let current = 0;
+  let trigger;
+  let usingFallback = false;
+  let wasOpen = false;
+
+  function openViewer() {
+    if (wasOpen) return;
+    usingFallback = false;
+    try {
+      if (typeof viewer.showModal !== 'function' || typeof viewer.close !== 'function') throw new TypeError();
+      viewer.showModal();
+    } catch {
+      usingFallback = true;
+      viewer.classList.add('is-fallback');
+      viewer.setAttribute('open', '');
+      backdrop.hidden = false;
+      shell.setAttribute('inert', '');
+      shell.setAttribute('aria-hidden', 'true');
+    }
+    wasOpen = true;
+    root.classList.add('gallery-overlay-open');
+    closeButton.focus({ preventScroll: true });
+  }
+
+  function resetViewer() {
+    if (!wasOpen || viewer.hasAttribute('open')) return;
+    wasOpen = false;
+    if (usingFallback) {
+      backdrop.hidden = true;
+      viewer.classList.remove('is-fallback');
+      shell.removeAttribute('inert');
+      shell.removeAttribute('aria-hidden');
+    }
+    root.classList.remove('gallery-overlay-open');
+    trigger?.focus({ preventScroll: true });
+  }
+
+  function closeViewer() {
+    if (!wasOpen) return;
+    if (usingFallback) viewer.removeAttribute('open');
+    else viewer.close();
+    resetViewer();
+  }
+
+  closeButton.addEventListener('click', closeViewer);
+  backdrop.addEventListener('click', closeViewer);
+  viewer.addEventListener('close', resetViewer);
+  viewer.addEventListener('click', (event) => {
+    if (event.target !== viewer) return;
+    const rect = viewer.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right
+        || event.clientY < rect.top || event.clientY > rect.bottom) closeViewer();
+  });
+
+  function selectPhoto(index) {
+    current = (index + photos.length) % photos.length;
+    const photo = photos[current];
+    fullPhoto.alt = photo.alt;
+    setGalleryImage(fullPhoto, photo);
+    write('gallery-count', (current + 1) + ' dari ' + photos.length + ' foto');
+  }
+
+  photos.forEach((photo, index) => {
+    const tile = document.createElement('article');
+    tile.className = 'gallery-tile';
+    tile.setAttribute('data-reveal', 'zoom');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'gallery-open';
+    button.setAttribute('aria-label', 'Lihat foto. ' + photo.alt);
+    button.setAttribute('aria-haspopup', 'dialog');
+    const frame = document.createElement('span');
+    frame.className = 'gallery-media';
+    const image = new Image();
+    image.alt = '';
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    setGalleryImage(image, photo);
+    const detail = document.createElement('span');
+    detail.className = 'gallery-enlarge';
+    detail.textContent = '+';
+    detail.setAttribute('aria-hidden', 'true');
+    frame.append(image);
+    button.append(frame, detail);
+    button.addEventListener('click', () => {
+      trigger = button;
+      selectPhoto(index);
+      openViewer();
+    });
+    tile.append(button);
+    byId('gallery-grid').append(tile);
+  });
+
+  prev.disabled = next.disabled = photos.length < 2;
+  prev.addEventListener('click', () => selectPhoto(current - 1));
+  next.addEventListener('click', () => selectPhoto(current + 1));
+  viewer.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeViewer();
+      return;
+    }
+    if (usingFallback && event.key === 'Tab') {
+      const controls = [...viewer.querySelectorAll('button:not([disabled])')];
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    if (photos.length < 2 || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    selectPhoto(current + (event.key === 'ArrowRight' ? 1 : -1));
+  });
+  show('galeri');
+}
+
+setupGallery(gallery);
 const musicButton = byId('music-toggle');
-const songName = media.song?.title || 'Lagu Pernikahan';
+const songName = media.song?.title || 'Lagu Undangan';
 
 if (media.music) {
   const music = byId('wedding-audio');
