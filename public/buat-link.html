@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#552822">
+  <title>Buat Link Tamu · Moses &amp; Lidya</title>
+  <style>
+    :root{color-scheme:light;--paper:#fbf0df;--card:#fff9ef;--ink:#311f1a;--muted:#6c5144;--red:#692e29;--dark:#552822;--border:#d9bda1;--gold:#efc58b;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    body{margin:0;min-width:0;background:#2b1b17;color:var(--ink)}
+    h1,h2,h3,p{margin:0}
+    button,input,textarea{font:inherit}
+    button,a,summary{-webkit-tap-highlight-color:transparent}
+    :focus-visible{outline:2px solid #9f573e;outline-offset:3px}
+    main{max-width:560px;min-height:100vh;margin:auto;background:var(--paper);box-shadow:0 0 64px #0c070553}
+    .masthead{position:relative;isolation:isolate;overflow:hidden;padding:31px clamp(20px,6vw,36px) 28px;background:linear-gradient(125deg,#622d26,#42201e);color:#fff1da}
+    .masthead::after{content:"";position:absolute;inset:auto 0 0;height:6px;background:repeating-linear-gradient(105deg,#d49b66 0 2px,#713b2c 2px 5px,#f3c587 5px 6px,#713b2c 6px 10px)}
+    .masthead::before{content:"";position:absolute;z-index:-1;inset:0 0 0 58%;background:repeating-linear-gradient(45deg,transparent 0 17px,#d49a6823 17px 18px,transparent 18px 28px),repeating-linear-gradient(-45deg,transparent 0 17px,#d49a6823 17px 18px,transparent 18px 28px);mask-image:linear-gradient(90deg,transparent,#000)}
+    .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#f0c694}
+    h1{font:400 clamp(2.15rem,8vw,3.05rem)/1.09 Georgia,serif;letter-spacing:-.05em;margin:9px 0}
+    .intro{max-width:37ch;font-size:.92rem;color:#f5ddc5}
+    .content{padding:24px clamp(16px,6vw,36px) 39px}
+    form,.guest-card{background:var(--card);border:1px solid var(--border);padding:clamp(14px,4.5vw,21px);box-shadow:0 3px 10px #4425170d}
+    label{display:block;font-weight:700;color:var(--dark);margin-bottom:6px}
+    input,textarea{display:block;width:100%;border:1px solid #cbab8e;border-radius:4px;background:#fffcf7;color:var(--ink);padding:10px 11px}
+    textarea{resize:vertical;min-height:83px}
+    input::placeholder,textarea::placeholder{color:#775d50;opacity:1}
+    .hint{font-size:.83rem;color:var(--muted);margin:5px 0 15px}
+    .base{margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid #e6d1bc}
+    .base summary{color:var(--red);font-size:.84rem;font-weight:700;cursor:pointer}
+    .base label{margin-top:11px;font-size:.88rem}
+    .base .hint{margin-bottom:2px}
+    .button{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:7px 11px;border:1px solid #c3946b;border-radius:4px;background:#fff7e9;color:var(--dark);text-decoration:none;cursor:pointer;font-size:.82rem;font-weight:700;text-align:center;line-height:1.25}
+    .button:hover{background:#fae6cb}
+    .primary{background:var(--red);border-color:var(--red);color:#fff8ee}
+    .primary:hover{background:#853e33}
+    .gold{background:var(--gold);border-color:#d7a467}
+    .gold:hover{background:#ffdcaa}
+    .generate{width:100%;min-height:47px;font-size:.94rem}
+    .feedback{margin-top:9px;color:var(--muted);font-size:.83rem}
+    .feedback:empty{display:none}
+    .feedback[data-error]{color:#8b2f28}
+    .results{margin-top:24px}
+    .results-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 12px;align-items:center;margin-bottom:11px}
+    h2{font:400 1.56rem/1.2 Georgia,serif;color:var(--dark)}
+    .result-list{list-style:none;display:grid;gap:12px;margin:0;padding:0}
+    .guest-card{border-left:3px solid #a36647}
+    .guest-card h3{font:600 1.08rem/1.35 Georgia,serif;color:var(--dark);overflow-wrap:anywhere}
+    .link{display:inline-block;margin:5px 0 13px;color:var(--red);font-size:.83rem;overflow-wrap:anywhere}
+    .actions{display:flex;flex-wrap:wrap;gap:7px}
+    .copy-notice{margin-top:10px;font-size:.82rem;color:#573f2e}
+    .copy-notice:empty{display:none}
+    .manual-copy{margin-top:8px;font-size:.88rem;min-height:62px}
+    .footnote{margin-top:17px;color:var(--muted);font-size:.78rem}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <p class="eyebrow">Moses &amp; Lidya</p>
+      <h1>Buat Link Tamu</h1>
+      <p class="intro">Tulis nama tamu, lalu salin link undangan yang sudah menampilkan namanya di sampul.</p>
+    </header>
+    <div class="content">
+      <form id="generator" novalidate>
+        <details class="base" id="setup" open>
+          <summary>Alamat undangan</summary>
+          <label for="base-url">Link undangan utama</label>
+          <input id="base-url" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://alamat-undangan.vercel.app" aria-describedby="base-hint">
+          <p class="hint" id="base-hint">Tempel link yang biasa dibuka tamu.</p>
+        </details>
+        <label for="guests">Nama tamu</label>
+        <textarea id="guests" rows="3" maxlength="5000" placeholder="Bapak Andika dan Keluarga" aria-describedby="names-hint"></textarea>
+        <p class="hint" id="names-hint">Untuk beberapa tamu, tulis satu nama per baris.</p>
+        <button class="button primary generate" type="submit">Buat link undangan</button>
+        <p class="feedback" id="feedback" role="status"></p>
+      </form>
+      <section class="results" id="results" aria-labelledby="result-title" hidden>
+        <div class="results-head">
+          <h2 id="result-title">Link siap dibagikan</h2>
+          <button class="button" id="copy-all" type="button" hidden>Salin semua link</button>
+        </div>
+        <p class="feedback" id="bulk-notice" role="status"></p>
+        <textarea class="manual-copy" id="bulk-manual" aria-label="Daftar link untuk disalin" readonly hidden></textarea>
+        <ul class="result-list" id="result-list"></ul>
+      </section>
+      <p class="footnote">Nama diproses di halaman ini. Tidak ada undangan yang dikirim otomatis.</p>
+    </div>
+  </main>
+  <script>
+    'use strict';
+    const byId = (id) => document.getElementById(id);
+    const baseInput = byId('base-url');
+    const namesInput = byId('guests');
+    const setup = byId('setup');
+    const feedback = byId('feedback');
+    const resultList = byId('result-list');
+    const copyAll = byId('copy-all');
+    let links = [];
+
+    if (/^https?:$/.test(location.protocol) && location.pathname.endsWith('/buat-link.html')) {
+      baseInput.value = new URL('./', location.href).href;
+      setup.open = false;
+      byId('base-hint').textContent = 'Alamat sudah terisi otomatis. Ubah hanya jika diperlukan.';
+    }
+
+    function cleanName(name) {
+      return name.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function getBaseUrl(value) {
+      let target = value.trim();
+      if (target && !/^[a-z][a-z\d+.-]*:/i.test(target)) target = 'https://' + target;
+      try {
+        const url = new URL(target);
+        if (!/^https?:$/.test(url.protocol) || !url.hostname.includes('.') || url.username || url.password) return null;
+        if (url.pathname.endsWith('/buat-link.html')) return new URL('./', url);
+        url.hash = '';
+        url.searchParams.delete('to');
+        return url;
+      } catch { return null; }
+    }
+
+    function personalizedLink(base, name) {
+      const url = new URL(base);
+      url.searchParams.set('to', name);
+      return url.href;
+    }
+
+    function inviteMessage(name, link) {
+      return 'Yth. ' + name + ',\n\nDengan sukacita, kami mengundang Anda untuk menghadiri acara pernikahan Moses & Lidya.\n\nSilakan buka undangan untuk melihat jadwal acara dan konfirmasi kehadiran.\n' + link + '\n\nTerima kasih atas doa dan restunya.\nMoses & Lidya';
+    }
+
+    async function copyText(text, notice, manual, button) {
+      manual.hidden = true;
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(text);
+      } catch {
+        manual.value = text;
+        manual.hidden = false;
+        manual.focus();
+        manual.select();
+        let copied = false;
+        try { copied = document.execCommand('copy'); } catch {}
+        if (!copied) {
+          notice.textContent = 'Teks sudah dipilih. Tekan lama lalu pilih Salin.';
+          return;
+        }
+        manual.hidden = true;
+        button.focus({ preventScroll: true });
+      }
+      notice.textContent = button.textContent === 'Salin pesan' ? 'Pesan siap ditempel di WhatsApp.' : 'Link berhasil disalin.';
+    }
+
+    function renderCard({ name, link }) {
+      const card = document.createElement('li');
+      card.className = 'guest-card';
+      const title = document.createElement('h3');
+      title.textContent = name;
+      const linkView = document.createElement('a');
+      linkView.className = 'link';
+      linkView.href = link;
+      linkView.textContent = link;
+      linkView.target = '_blank';
+      linkView.rel = 'noopener noreferrer';
+      const message = inviteMessage(name, link);
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      const notice = document.createElement('p');
+      notice.className = 'copy-notice';
+      notice.setAttribute('role', 'status');
+      const manual = document.createElement('textarea');
+      manual.className = 'manual-copy';
+      manual.setAttribute('aria-label', 'Teks untuk disalin');
+      manual.readOnly = true;
+      manual.hidden = true;
+      for (const [label, text, kind] of [['Salin link', link, ''], ['Salin pesan', message, ' gold']]) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'button' + kind;
+        button.textContent = label;
+        button.addEventListener('click', () => copyText(text, notice, manual, button));
+        actions.append(button);
+      }
+      const whatsapp = document.createElement('a');
+      whatsapp.className = 'button';
+      whatsapp.href = 'https://wa.me/?text=' + encodeURIComponent(message);
+      whatsapp.target = '_blank';
+      whatsapp.rel = 'noopener noreferrer';
+      whatsapp.textContent = 'Buka WhatsApp';
+      actions.append(whatsapp);
+      card.append(title, linkView, actions, notice, manual);
+      return card;
+    }
+
+    function showError(message, input) {
+      feedback.dataset.error = '';
+      feedback.textContent = message;
+      input.focus();
+    }
+
+    byId('generator').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const base = getBaseUrl(baseInput.value);
+      if (!base) {
+        setup.open = true;
+        return showError('Masukkan alamat undangan yang benar, misalnya https://alamat-undangan.vercel.app.', baseInput);
+      }
+      const names = [...new Set(namesInput.value.split(/\r?\n/).map(cleanName).filter(Boolean))];
+      if (names.length === 0) return showError('Tulis setidaknya satu nama tamu.', namesInput);
+      if (names.length > 50) return showError('Buat maksimal 50 link sekali jalan.', namesInput);
+      if (names.some((name) => name.length > 80)) return showError('Nama tamu maksimal 80 karakter per baris.', namesInput);
+      links = names.map((name) => ({ name, link: personalizedLink(base, name) }));
+      resultList.replaceChildren(...links.map(renderCard));
+      byId('results').hidden = false;
+      copyAll.hidden = links.length < 2;
+      byId('bulk-manual').hidden = true;
+      byId('bulk-notice').textContent = '';
+      delete feedback.dataset.error;
+      feedback.textContent = links.length + ' link siap dibagikan di bawah.';
+    });
+
+    copyAll.addEventListener('click', () => {
+      const text = links.map(({ name, link }) => name + '\n' + link).join('\n\n');
+      copyText(text, byId('bulk-notice'), byId('bulk-manual'), copyAll);
+    });
+  </script>
+</body>
+</html>
