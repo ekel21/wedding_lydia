@@ -12,9 +12,9 @@ export const wedding = {
     mapsUrl: '',
   },
   reception: {
-    date: '',
-    start: '',
-    end: '',
+    date: '2027-01-16',
+    start: '07:00',
+    end: '18:00',
     venue: 'Jambur Taras Bahorok',
     area: 'Bahorok, Sumatera Utara',
     mapsQuery: 'Jambur Taras Bahorok Sumatera Utara',

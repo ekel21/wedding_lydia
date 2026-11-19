@@ -158,7 +158,7 @@ const countdown = wedding[wedding.countdown];
 const target = countdown?.start ? eventTime(countdown.date, countdown.start) : null;
 if (target) {
   show('countdown');
-  const eventName = wedding.countdown === 'ceremony' ? 'Pemberkatan' : 'Resepsi';
+  const eventName = wedding.countdown === 'ceremony' ? 'Pemberkatan' : 'Acara Adat';
   write('countdown-title', 'Menuju ' + eventName);
   write('countdown-date', formatEventDate(countdown.date).replace(/^[^,]+, /, ''));
   byId('count-grid').setAttribute('aria-label', 'Hitung mundur menuju ' + eventName.toLowerCase());

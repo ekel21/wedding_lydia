@@ -9,9 +9,12 @@ test('15 Januari 2027 jatuh pada Jumat dan konfigurasi WIB dihitung tepat', () =
   assert.equal(eventTime('2027-02-30', '14:00'), null);
 });
 
-test('jadwal resepsi tidak mengikuti pemberkatan ketika belum tersedia', () => {
-  assert.equal(formatEventDate(wedding.reception.date), 'Jadwal menyusul');
-  assert.equal(formatEventHours(wedding.reception), 'Tanggal dan waktu akan diumumkan.');
+test('acara adat pada Sabtu 16 Januari 2027 pukul 07.00–18.00 WIB', () => {
+  assert.equal(formatEventDate(wedding.reception.date), 'Sabtu, 16 Januari 2027');
+  assert.equal(formatEventHours(wedding.reception), 'Pukul 07.00–18.00 WIB');
+  assert.equal(eventTime(wedding.reception.date, wedding.reception.start).toISOString(), '2027-01-16T00:00:00.000Z');
+  assert.equal(eventTime(wedding.reception.date, wedding.reception.end).toISOString(), '2027-01-16T11:00:00.000Z');
+  assert.equal(wedding.reception.venue, 'Jambur Taras Bahorok');
 });
 
 test('personalisasi tamu menerima spasi dan aksen, dengan panjang terbatas', () => {

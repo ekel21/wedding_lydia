@@ -26,13 +26,13 @@ Edit `src/wedding.js` sebelum membagikan tautan.
 | --- | --- |
 | Jam pemberkatan | Pukul 14.00 WIB, penafsiran sementara dari “2 WIB”. Jam selesai tidak ditampilkan karena belum tersedia. |
 | Tempat pemberkatan | Gereja GBKP Runggun Bahorok, Laudamak. Konfirmasi penulisan lokasi dan pin yang tepat. |
-| Resepsi | Jambur Taras Bahorok. Tanggal dan jam tampil “Jadwal menyusul” sampai diisi. |
-| Peta | Masing-masing mengarah ke pencarian nama tempat. Ganti `ceremony.mapsUrl` dan `reception.mapsUrl` dengan pin resmi. Teks peta yang diberikan untuk resepsi menyebut gereja, jadi tidak dipakai untuk resepsi. |
+| Acara Adat | Sabtu, 16 Januari 2027, pukul 07.00–18.00 WIB, di Jambur Taras Bahorok. |
+| Peta | Masing-masing mengarah ke pencarian nama tempat. Ganti `ceremony.mapsUrl` dan `reception.mapsUrl` dengan pin resmi. Tautan gereja hanya digunakan untuk pemberkatan. |
 | Nama keluarga | “Bena Tuah Tarigan Sibero” memakai satu huruf n. Nama Bapak Muhtar Pinem diberi tanda (+). |
 | Amplop digital | Sudah memakai data BRI yang diberikan. Tetapkan `gift: null` jika ingin menyembunyikan. |
 | Foto | Galeri membaca isi folder Google Drive yang diberikan. Salinan WebP dari tiga PNG terbaru ikut sebagai cadangan. Galeri muat sampai 6 foto. |
 
-Nama, narasi, dan metadata untuk kartu tautan ada di `index.html`. Jika tanggal pemberkatan berubah, ubah juga tanggal pada `og:description` dan teks cadangan di HTML. Tanggal resepsi tidak otomatis mengikuti tanggal pemberkatan.
+Nama, narasi, dan metadata untuk kartu tautan ada di `index.html`. Jika jadwal acara berubah, ubah juga tanggal pada `og:description` dan teks cadangan di HTML. Jadwal Acara Adat diatur terpisah dari jadwal pemberkatan.
 
 Contoh tautan tamu: `https://domain-undangan.vercel.app/?to=Keluarga%20Pinem`. Buat tautan secara manual dengan mengganti spasi menjadi `%20`, atau buat parameter dengan `new URLSearchParams({to: 'Keluarga Pinem'}).toString()`.
 
