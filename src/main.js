@@ -234,6 +234,13 @@ const gallerySnapshot = (Array.isArray(media.gallery) ? media.gallery : [])
   .map((entry) => typeof entry === 'string' ? { src: entry } : entry)
   .filter((entry) => typeof entry?.src === 'string' && entry.src.trim());
 
+// Art direction for the current Drive photos. Other photos still flow in Drive order.
+const galleryFraming = new Map([
+  ['1oiXZjM80iSGHvgAG9swuPxae-Bl-cFbV', { order: 0, width: 1600, height: 908 }],
+  ['1YsNZtRy5SvKa4B_qMY-mdB9wgZRWJxav', { order: 1, width: 1111, height: 1416 }],
+  ['1ASGtqEabbTDWZZCuuo9rS-fotKOBTeb1', { order: 2, width: 1416, height: 1111 }],
+]);
+
 async function loadGallery() {
   const describe = (entry, index) => ({ ...entry, alt: entry.alt || 'Foto Moses dan Lidya ' + (index + 1) });
   const snapshot = gallerySnapshot.slice(0, galleryPhotoLimit).map(describe);
@@ -267,8 +274,14 @@ function setGalleryImage(image, photo, thumbnail = false) {
   image.src = remote || fallback;
 }
 
-function setupGallery(photos) {
-  if (!photos.length) return;
+function setupGallery(entries) {
+  if (!entries.length) return;
+  const orderOf = (photo) => galleryFraming.get(photo.driveId)?.order ?? galleryFraming.size;
+  const photos = [...entries].sort((a, b) => orderOf(a) - orderOf(b));
+  const grid = byId('gallery-grid');
+  if (photos.length === 3 && photos.every((photo, index) => orderOf(photo) === index)) {
+    grid.dataset.layout = 'featured-pair';
+  }
   const viewer = byId('gallery-viewer');
   const closeButton = byId('gallery-close');
   const backdrop = byId('gallery-backdrop');
@@ -351,6 +364,11 @@ function setupGallery(photos) {
     frame.className = 'gallery-media';
     const image = new Image();
     image.alt = '';
+    const dimensions = galleryFraming.get(photo.driveId);
+    if (dimensions) {
+      image.width = dimensions.width;
+      image.height = dimensions.height;
+    }
     image.loading = 'lazy';
     image.decoding = 'async';
     setGalleryImage(image, photo, true);
@@ -366,7 +384,7 @@ function setupGallery(photos) {
       openViewer();
     });
     tile.append(button);
-    byId('gallery-grid').append(tile);
+    grid.append(tile);
   });
 
   prev.disabled = next.disabled = photos.length < 2;
