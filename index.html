@@ -299,7 +299,10 @@
     </div>
   </dialog>
 
-  <audio id="wedding-audio" preload="metadata" loop></audio>
+  <audio id="wedding-audio" preload="auto" loop>
+    <source src="/audio/jumpa-ras-ate-ngena.mp3" type="audio/mpeg">
+    <source src="/api/wedding-music" type="audio/mp4">
+  </audio>
   <div class="music-feedback" id="music-feedback" role="status" aria-live="polite"></div>
   <script type="module" src="/src/main.js"></script>
 </body>

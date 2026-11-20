@@ -379,7 +379,7 @@ function setupGallery(entries) {
   photos.forEach((photo, index) => {
     const tile = document.createElement('article');
     tile.className = 'gallery-tile';
-    tile.setAttribute('data-reveal', 'zoom');
+    tile.setAttribute('data-reveal', 'photo');
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'gallery-open';
@@ -472,10 +472,11 @@ const songName = media.song?.title || 'Lagu Undangan';
 if (media.music) {
   const music = byId('wedding-audio');
   const feedbackId = 'music-feedback';
-  // Vercel streams the Dropbox file from the same origin with its actual MIME type.
-  // The standalone HTML has no server and uses Dropbox directly.
+  // Hosted HTML preloads the small, same-origin audio before the guest taps Open.
+  // If it cannot load, the browser tries the Dropbox proxy as a second source.
   const standalone = location.protocol === 'file:';
-  music.src = standalone ? media.music : '/api/wedding-music';
+  if (standalone) music.src = media.music;
+  else if (!music.querySelector('source')) music.src = '/api/wedding-music';
   show('music-toggle');
 
   function syncMusicButton() {
@@ -486,6 +487,7 @@ if (media.music) {
   function playMusic() {
     write(feedbackId, '');
     if (music.error) music.load();
+    // Keep play() inside the actual tap, for browsers that require a user gesture.
     const attempt = music.play();
     attempt?.catch((error) => {
       if (error.name === 'AbortError') return;
@@ -494,7 +496,7 @@ if (media.music) {
         ? 'Tekan ikon musik untuk memutar lagu.'
         : (standalone
           ? 'Periksa koneksi internet. Jika audio tidak dapat diputar di pratinjau, coba versi Vercel.'
-          : 'Musik Dropbox belum dapat diputar. Periksa koneksi lalu tekan ikon musik lagi.'));
+          : 'Musik belum dapat diputar. Periksa koneksi, lalu tekan ikon musik lagi.'));
     });
   }
 

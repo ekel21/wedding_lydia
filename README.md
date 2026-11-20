@@ -44,9 +44,9 @@ Galeri menampilkan sampai enam gambar yang punya format web, seperti PNG, JPG, d
 
 ### Ayat pembuka dan musik
 - Ayat pembuka memakai Matius 19:6, Terjemahan Baru (TB). Ubah teks di bagian `scripture` pada `index.html` jika diperlukan.
-- **Jumpa Ras Ate Ngena – Iche Br Ginting** hanya bersumber dari Dropbox. Saat **Buka Undangan** ditekan, lagu mulai diputar dan terus berjalan saat halaman digulir. Ikon not musik hanya untuk jeda/putar kembali, tanpa membuka YouTube.
-- Pastikan file Dropbox tetap dapat diakses oleh **Siapa saja yang memiliki tautan**. Pratinjau HTML yang diunduh memerlukan internet dan mengambil lagu langsung dari Dropbox. Pada situs Vercel, fungsi `api/wedding-music.js` meneruskan audio dari Dropbox dengan jenis media yang benar dan mendukung permintaan sebagian file. Tidak ada salinan audio di proyek.
-- Jika file Dropbox diganti, perbarui `media.music` pada `src/wedding.js` dengan tautan langsung `raw=1`. Sesuaikan `media.musicMimeType` dengan format audio yang sebenarnya, misalnya `audio/mpeg` untuk MP3 asli. Gunakan deploy Vercel dari folder sumber proyek, termasuk folder `api/`. Mengunggah hanya folder `dist/` tidak menyertakan fungsi ini.
+- **Jumpa Ras Ate Ngena – Iche Br Ginting** dimuat lebih awal dari salinan MP3 yang dibuat dari file Dropbox yang sama. Jeda hening di awal dipangkas agar musik cepat terdengar saat tamu menekan **Buka Undangan**. Ikon not musik untuk jeda dan putar kembali, tanpa membuka YouTube.
+- Salinan MP3 berada di `public/audio/jumpa-ras-ate-ngena.mp3`. Jika salinan itu gagal dimuat, browser mencoba proxy Dropbox di `api/wedding-music.js`. Pratinjau HTML lokal tetap menggunakan Dropbox langsung. Pastikan file Dropbox dapat diakses oleh **Siapa saja yang memiliki tautan**.
+- Jika lagunya diganti, ganti file MP3 dan perbarui `media.music` serta `media.musicMimeType` di `src/wedding.js` untuk cadangan. Sesuaikan juga tipe sumber cadangan di `index.html` dengan format sebenarnya, misalnya `audio/mpeg` untuk MP3 asli.
 
 ## 2. Hubungkan Firebase
 
