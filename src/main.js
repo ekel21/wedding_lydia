@@ -230,9 +230,11 @@ for (const key of ['groom', 'bride']) {
   image.src = media[key];
   portrait.append(image);
 }
+// Hide the hillside portrait from the invitation, even when it is still in Drive.
+const hiddenGalleryPhotoIds = new Set(['1YsNZtRy5SvKa4B_qMY-mdB9wgZRWJxav']);
 const gallerySnapshot = (Array.isArray(media.gallery) ? media.gallery : [])
   .map((entry) => typeof entry === 'string' ? { src: entry } : entry)
-  .filter((entry) => typeof entry?.src === 'string' && entry.src.trim());
+  .filter((entry) => typeof entry?.src === 'string' && entry.src.trim() && !hiddenGalleryPhotoIds.has(entry.driveId));
 
 // Art direction for the current Drive photos. Other photos still flow in Drive order.
 const galleryFraming = new Map([
@@ -253,7 +255,7 @@ async function loadGallery() {
     const { ids } = await response.json();
     if (!Array.isArray(ids)) return snapshot;
     const known = new Map(snapshot.map((photo) => [photo.driveId, photo]));
-    return [...new Set(ids.filter((id) => driveGalleryImage(id)))].slice(0, galleryPhotoLimit)
+    return [...new Set(ids.filter((id) => !hiddenGalleryPhotoIds.has(id) && driveGalleryImage(id)))].slice(0, galleryPhotoLimit)
       .map((driveId) => known.get(driveId) || { driveId }).map(describe);
   } catch {
     return snapshot;
@@ -281,6 +283,11 @@ function setupGallery(entries) {
   const grid = byId('gallery-grid');
   if (photos.length === 3 && photos.every((photo, index) => orderOf(photo) === index)) {
     grid.dataset.layout = 'featured-pair';
+  } else if (photos.length === 2 && photos.every((photo) => {
+    const dimensions = galleryFraming.get(photo.driveId);
+    return dimensions && dimensions.width > dimensions.height;
+  })) {
+    grid.dataset.layout = 'two-landscapes';
   }
   const viewer = byId('gallery-viewer');
   const closeButton = byId('gallery-close');
