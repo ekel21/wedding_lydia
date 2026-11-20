@@ -379,7 +379,7 @@ function setupGallery(entries) {
   photos.forEach((photo, index) => {
     const tile = document.createElement('article');
     tile.className = 'gallery-tile';
-    tile.setAttribute('data-reveal', 'zoom');
+    tile.setAttribute('data-reveal', 'photo');
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'gallery-open';

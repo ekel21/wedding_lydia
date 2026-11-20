@@ -415,3 +415,107 @@ html.gallery-overlay-open{overflow:hidden}
 .guest-wish-name{font-size:.91rem; color:var(--brick); overflow-wrap:anywhere}
 .guest-wish time{font-size:.73rem; color:var(--muted)}
 .guest-wish p{font-size:.91rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:4px}
+
+/* Karo ornament rhythm: compact chapter seams, an embossed gallery, and short reveals. */
+:root{
+  --section-space:clamp(30px,8.6vw,41px);
+  --karo-edge:url("/images/ornamen-tepi-karo.svg");
+  --karo-scroll:url("/images/ornamen-embun-karo.svg");
+  --karo-seal:url("/images/simpul-tenun-karo.svg");
+}
+.cover-cloth::before{background-position:91% 0; background-size:76px 95px; opacity:.27; mask-image:linear-gradient(90deg,transparent 21%,#000)}
+.cover-cloth::after,.closing::after{background-image:var(--karo-edge); background-size:80px 16px; height:12px}
+.cover-art::before{border-color:#e5ad7aa8; outline:1px dashed #d6a47467; outline-offset:3px}
+.welcome{padding-block:32px 25px}
+.welcome::before{inset:0 0 0 auto; width:20%; height:auto; background-size:45px 58px; opacity:.23; mask-image:linear-gradient(90deg,transparent,#000)}
+.welcome-mark{inset:0 2px auto auto; opacity:.21}
+.countdown{padding-block:25px 33px}
+.countdown::after{
+  content:""; position:absolute; inset:auto 0 0; height:6px; pointer-events:none;
+  background:var(--karo-edge) center / 55px 11px repeat-x;
+}
+.paper-section,.story,.responses{position:relative; isolation:isolate}
+:is(.intro,.events,.story,.gift,.responses)::before{
+  content:""; position:absolute; inset:0 0 auto; height:6px; pointer-events:none;
+  background:var(--karo-edge) center / 45px 9px repeat-x; opacity:.78;
+}
+:is(.intro,.events,.story,.gift,.responses)::after{
+  content:""; position:absolute; z-index:-1; inset:8px auto 0 0; width:11px; pointer-events:none;
+  background:var(--pattern) center 0 / 28px 35px repeat-y; filter:sepia(.22) saturate(1.24) brightness(.65); opacity:.28;
+}
+:is(.events,.responses)::after{inset-inline:auto 0}
+.section-heading{margin-bottom:20px}
+.chapter-ornament{inset-inline-end:6px; width:46px; height:46px}
+.karo-bridge{
+  position:relative; isolation:isolate; display:grid; place-items:center; min-height:48px; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 50%,#713c2c,#3c211c 73%);
+  border-block:1px solid #a57559;
+}
+.karo-bridge::before{content:""; position:absolute; z-index:-1; inset:0; background:var(--pattern) center / 57px 69px; opacity:.24}
+.karo-bridge img{width:min(90%,330px); height:auto; max-height:48px}
+.woven-interlude{height:49px}
+.woven-interlude .woven-shuttle{inset-block:14px; background-image:var(--karo-edge); background-size:91px 18px}
+.woven-interlude img{width:40px; height:40px}
+.event-card::before{background-image:var(--karo-edge); background-size:65px 13px}
+.gift .bank-card,.responses .form-card{position:relative}
+.gift .bank-card::before,.responses .form-card::before{
+  content:""; position:absolute; inset:0 0 auto; height:4px; pointer-events:none;
+  background:var(--karo-edge) center / 38px 8px repeat-x;
+}
+.closing{padding-block:43px 33px}
+.closing::before{
+  background:var(--karo-scroll) center 11px / min(84%,352px) auto no-repeat,
+    var(--pattern) center / 63px 82px;
+  opacity:.26;
+}
+
+.gallery{
+  color:#ffefdc; border-bottom-color:#8b5235; padding-block:clamp(29px,7.5vw,38px) 20px;
+  background:radial-gradient(ellipse at 15% 33%,#733830 0,#502921 49%,#38211d 100%);
+}
+.gallery::before{
+  content:""; position:absolute; z-index:-1; inset:0; pointer-events:none;
+  background:var(--karo-edge) center top / 61px 12px repeat-x,
+    var(--pattern) center / 56px 72px; opacity:.24;
+}
+.gallery .gallery-kicker{color:#ecc293; margin-bottom:5px}
+.gallery .section-heading h2{color:#fff2dc}
+.gallery .chapter-ornament{filter:drop-shadow(0 5px 7px #271511c9)}
+.gallery-grid[data-layout="two-landscapes"]{gap:13px; isolation:isolate}
+.gallery-tile{
+  position:relative; padding:9px; border-color:#c59366; background:#311d18;
+  box-shadow:0 7px 16px #24120e8c;
+}
+.gallery-tile::before,.gallery-tile::after{
+  content:""; position:absolute; pointer-events:none; inset-inline:0; height:5px;
+  background:var(--karo-edge) center / 46px 9px repeat-x;
+}
+.gallery-tile::before{top:0}
+.gallery-tile::after{bottom:0}
+.gallery-grid[data-layout="two-landscapes"] .gallery-tile:nth-child(2){
+  --gallery-inset:clamp(29px,10vw,43px);
+  margin-inline-start:var(--gallery-inset); background:#f4dfc3; border-color:#e4b17d;
+}
+.gallery-grid[data-layout="two-landscapes"] .gallery-tile:nth-child(2) .gallery-open::after{
+  content:""; position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 0 1px #b6764e;
+}
+.gallery-grid[data-layout="two-landscapes"] .gallery-tile:nth-child(2) .gallery-media{background:#56372c}
+.gallery-grid[data-layout="two-landscapes"] .gallery-tile:nth-child(2) .gallery-open{overflow:visible}
+.gallery-grid[data-layout="two-landscapes"] .gallery-tile:nth-child(2) .gallery-open::before{
+  inset:0 calc(100% + 14px) 0 auto; width:calc(var(--gallery-inset) - 12px); opacity:.88; pointer-events:none;
+  background:var(--karo-seal) center / min(100%,24px) auto no-repeat, var(--pattern) center / 25px 32px repeat-y;
+}
+.gallery-enlarge{right:7px; bottom:7px; z-index:1; width:33px; height:33px; border-color:#edc493; background:#52251de8}
+.gallery-ornament{display:grid; place-items:center; margin:13px auto 0; max-width:310px}
+.gallery-ornament img{width:100%; height:auto; max-height:48px}
+
+.motion-enabled .motion-armed[data-reveal="photo"]{transform:translate(-10px,11px) scale(.975)}
+.motion-enabled .motion-armed[data-reveal="photo"]:nth-child(even){transform:translate(10px,11px) scale(.975)}
+.motion-enabled .motion-armed[data-reveal="ornament"]{opacity:1; transform:none}
+.motion-enabled .motion-armed[data-reveal="ornament"] img{opacity:0}
+.motion-enabled .motion-in[data-reveal="ornament"] img{animation:karo-unfold .91s var(--ease) both}
+@keyframes karo-unfold{
+  from{opacity:0; clip-path:inset(0 49%); transform:scale(.95)}
+  to{opacity:1; clip-path:inset(0 0); transform:none}
+}
+@media(prefers-reduced-motion:reduce){.motion-enabled .motion-armed[data-reveal="ornament"] img{opacity:1}}
