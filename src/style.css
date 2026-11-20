@@ -380,6 +380,7 @@ section[id]:not(.cover),#awal{scroll-margin-top:68px}
 .gallery-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; align-items:start}
 /* The narrower portrait and wider landscape then sit at the same visual height. */
 .gallery-grid[data-layout="featured-pair"]{grid-template-columns:minmax(0,calc(38.1% - 1px)) minmax(0,1fr)}
+.gallery-grid[data-layout="two-landscapes"]{grid-template-columns:minmax(0,1fr)}
 .gallery-tile{min-width:0; border:1px solid #d5af8d; padding:5px; background:#fffaf0; box-shadow:0 3px 10px #4b2b1713}
 .gallery-tile:first-child:nth-last-child(odd){grid-column:1/-1}
 .gallery-open{display:block; position:relative; width:100%; padding:0; border:0; background:#e5d2b8; color:#fff8ee; overflow:hidden}
